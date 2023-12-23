@@ -13,29 +13,29 @@ The raw data is as follows:
 
 | NARA page scan | GPT4-vision-preview | Tesseract 5.3.3 |
 | -------------- | ------------------- | --------------- |
-| [0028.jpg](/articles/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0028.jpg) | | |
-| [0053.jpg](/articles/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0053.jpg) | | |
-| [0129.jpg](/articles/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0129.jpg) | | |
-| [0197.jpg](/articles/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0197.jpg) | | |
-| [0200.jpg](/articles/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0200.jpg) | | |
-| [0235.jpg](/articles/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0235.jpg) | | |
-| [0268.jpg](/articles/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0268.jpg) | | |
-| [0305.jpg](/articles/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0305.jpg) | | |
-| [0360.jpg](/articles/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0360.jpg) | | |
-| [0408.jpg](/articles/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0408.jpg) | | |
-| [0413.jpg](/articles/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0413.jpg) | | |
-| [0425.jpg](/articles/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0425.jpg) | | |
-| [0499.jpg](/articles/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0499.jpg) | | |
-| [0598.jpg](/articles/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0598.jpg) | | |
-| [0606.jpg](/articles/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0606.jpg) | | |
-| [0608.jpg](/articles/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0608.jpg) | | |
-| [0612.jpg](/articles/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0612.jpg) | | |
-| [0667.jpg](/articles/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0667.jpg) | | |
-| [0730.jpg](/articles/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0730.jpg) | | |
-| [0820.jpg](/articles/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0820.jpg) | | |
-| [0836.jpg](/articles/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0836.jpg) | | |
-| [0839.jpg](/articles/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0839.jpg) | | |
-| [0894.jpg](/articles/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0894.jpg) | | |
-| [0931.jpg](/articles/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0931.jpg) | | |
-| [1042.jpg](/articles/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/1042.jpg) | | |
+| [0028.jpg](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0028.jpg) | [0028-gpt4.txt](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0028-gpt4.txt) | [0028-tess.txt](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0028-tess.txt) |
+| [0053.jpg](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0053.jpg) | [0053-gpt4.txt](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0053-gpt4.txt) | [0053-tess.txt](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0053-tess.txt) |
+| [0129.jpg](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0129.jpg) | [0129-gpt4.txt](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0129-gpt4.txt) | [0129-tess.txt](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0129-tess.txt) |
+| [0197.jpg](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0197.jpg) | [0197-gpt4.txt](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0197-gpt4.txt) | [0197-tess.txt](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0197-tess.txt) |
+| [0200.jpg](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0200.jpg) | [0200-gpt4.txt](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0200-gpt4.txt) | [0200-tess.txt](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0200-tess.txt) |
+| [0235.jpg](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0235.jpg) | [0235-gpt4.txt](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0235-gpt4.txt) | [0235-tess.txt](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0235-tess.txt) |
+| [0268.jpg](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0268.jpg) | [0268-gpt4.txt](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0268-gpt4.txt) | [0268-tess.txt](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0268-tess.txt) |
+| [0305.jpg](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0305.jpg) | [0305-gpt4.txt](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0305-gpt4.txt) | [0305-tess.txt](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0305-tess.txt) |
+| [0360.jpg](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0360.jpg) | [0360-gpt4.txt](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0360-gpt4.txt) | [0360-tess.txt](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0360-tess.txt) |
+| [0408.jpg](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0408.jpg) | [0408-gpt4.txt](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0408-gpt4.txt) | [0408-tess.txt](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0408-tess.txt) |
+| [0413.jpg](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0413.jpg) | [0413-gpt4.txt](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0413-gpt4.txt) | [0413-tess.txt](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0413-tess.txt) |
+| [0425.jpg](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0425.jpg) | [0425-gpt4.txt](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0425-gpt4.txt) | [0425-tess.txt](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0425-tess.txt) |
+| [0499.jpg](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0499.jpg) | [0499-gpt4.txt](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0499-gpt4.txt) | [0499-tess.txt](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0499-tess.txt) |
+| [0598.jpg](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0598.jpg) | [0598-gpt4.txt](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0598-gpt4.txt) | [0598-tess.txt](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0598-tess.txt) |
+| [0606.jpg](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0606.jpg) | [0606-gpt4.txt](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0606-gpt4.txt) | [0606-tess.txt](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0606-tess.txt) |
+| [0608.jpg](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0608.jpg) | [0608-gpt4.txt](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0608-gpt4.txt) | [0608-tess.txt](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0608-tess.txt) |
+| [0612.jpg](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0612.jpg) | [0612-gpt4.txt](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0612-gpt4.txt) | [0612-tess.txt](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0612-tess.txt) |
+| [0667.jpg](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0667.jpg) | [0667-gpt4.txt](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0667-gpt4.txt) | [0667-tess.txt](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0667-tess.txt) |
+| [0730.jpg](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0730.jpg) | [0730-gpt4.txt](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0730-gpt4.txt) | [0730-tess.txt](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0730-tess.txt) |
+| [0820.jpg](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0820.jpg) | [0820-gpt4.txt](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0820-gpt4.txt) | [0820-tess.txt](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0820-tess.txt) |
+| [0836.jpg](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0836.jpg) | [0836-gpt4.txt](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0836-gpt4.txt) | [0836-tess.txt](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0836-tess.txt) |
+| [0839.jpg](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0839.jpg) | [0839-gpt4.txt](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0839-gpt4.txt) | [0839-tess.txt](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0839-tess.txt) |
+| [0894.jpg](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0894.jpg) | [0894-gpt4.txt](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0894-gpt4.txt) | [0894-tess.txt](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0894-tess.txt) |
+| [0931.jpg](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0931.jpg) | [0931-gpt4.txt](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0931-gpt4.txt) | [0931-tess.txt](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0931-tess.txt) |
+| [1042.jpg](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/1042.jpg) | [1042-gpt4.txt](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/1042-gpt4.txt) | [1042-tess.txt](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/1042-tess.txt) |
 
