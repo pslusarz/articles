@@ -1,5 +1,5 @@
 ---
-title: "Comparing Tesseract and GPT4 Optical Character Recognition on NARA Rolls"
+title: "Combining Tesseract and GPT4 Optical Character Recognition on NARA Rolls"
 date: 2023-12-22
 ---
 
@@ -7,7 +7,7 @@ date: 2023-12-22
 
 My journey with this dataset started when I was trying to obtain some data on Radom pistols, quite a trifling matter, but after seeing the enormity of this dataset, I realized it presents unique insight into state operations. While not complete, the scale and level of detail of this documentation make it unprecedented. In addition to historic knowledge of WW2, one may also be able to gleam answers to fundamental questions about statehood, like what holds a state together, how the information and decisions flow through the various branches, and what seeds of demise may exist in its institutions. However, to make it possible to gain these insights, researchers will need to have to be able to query it efficiently. I thought about this for awhile, and I don't think there's any fundamental barrier to making that happen. Given off the shelf technologies, it should be fairly feasible to build this into a multi lingual searchable dataset that can be added to over time.
 
-Not sure where to begin, I'd like to start by comparing two OCR technologies: Tesseract and GPT4, which recently aquired "vision" capabilities - meaning you can submit an image to it and ask it questions about the image. While I try to be methodical, I realize that this is just a snapshot in time ofthe capabilities of each of these technologies, and so the main benefit of this project is to obtain insights about the data and challenges with OCR. With these insights, I hope to be able to better approach the rest of this project.
+Not sure where to begin, I wanted to start by comparing two OCR technologies: Tesseract and GPT4, which recently aquired "vision" capabilities - meaning you can submit an image to it and ask it questions about the image. While I try to be methodical, I realize that this is just a snapshot in time of the capabilities of each of these technologies, and so the main benefit of this project is to obtain insights about the data and challenges with OCR. With these insights, I hope to be able to better approach the rest of this project.
 
 For comparison, I selected 25 random files from the dataset of over 1000. When the random number pointed to a file that was not a good candidate for OCR, like a separator title page, I advanced to the next one that might contain a useful text. I may have done it twice or so. The total cost for GPT4 was 0.83 USD (extrapolating to the entire 1000 page roll, it'd be 33 USD). It is difficult to come up with comparison criteria, since neither scan is perfect, and I don't have the patience to transcribe even a single document in the comparison set. And so I decided to do a subjective count of errors I identify, also noting subjective differences that catch my eye. 
 
