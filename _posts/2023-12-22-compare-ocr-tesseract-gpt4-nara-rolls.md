@@ -19,7 +19,7 @@ Error counts
 Select qualitative errors
 | Page number | GPT4-vision-preview | Tesserace 5.3.3 |
 |-------------|---------------------| ----------------|
-| 0028 | misspells location Sadkow | fails to identify date \n fails to identify subsection 3.) |
+| 0028 | misspells location Sadkow | fails to identify date, <br>fails to identify subsection 3.) |
 
 The raw data is as follows:
 
