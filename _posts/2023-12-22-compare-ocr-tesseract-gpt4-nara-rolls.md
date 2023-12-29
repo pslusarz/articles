@@ -16,12 +16,14 @@ Error counts
 | Page number | GPT4-vision-preview | Tesserace 5.3.3 |
 |-------------|---------------------| ----------------|
 | 0028 | 6 | 20 |
+| 0053 | 24 | 17 |
 
 Select qualitative errors
 
 | Page number | GPT4-vision-preview | Tesserace 5.3.3 |
 |-------------|---------------------| ----------------|
 | 0028 | misspells location Sadkow | fails to identify document dates, <br>fails to identify subsection 3.) <br> phantom empty lines|
+| 0053 | completely mistranslates "zweier Kocher beendet" as "wieder beschädigt worden" <br> "kurtzfristigen Termin" hallucinated to "fortlaufenden Vorräte" <br> misidentifies location Glowno as Glomun <br> Haute as Hute multiple times | multiple misidentification of "GG" - General Gouvernment as "66" <br> phantom empty lines|
 
 The raw data is as follows:
 
