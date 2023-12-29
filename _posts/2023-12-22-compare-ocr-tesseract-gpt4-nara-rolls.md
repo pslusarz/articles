@@ -9,7 +9,17 @@ My journey with this dataset started when I was trying to obtain some data on Ra
 
 Not sure where to begin, I'd like to start by comparing two OCR technologies: Tesseract and GPT4, which recently aquired "vision" capabilities - meaning you can submit an image to it and ask it questions about the image. While I try to be methodical, I realize that this is just a snapshot in time ofthe capabilities of each of these technologies, and so the main benefit of this project is to obtain insights about the data and challenges with OCR. With these insights, I hope to be able to better approach the rest of this project.
 
-For comparison, I selected 25 random files from the dataset of over 1000. When the random number pointed to a file that was not a good candidate for OCR, like a separator title page, I advanced to the next one that might contain a useful text. I may have done it twice or so. The total cost for GPT4 was 0.83 USD (extrapolating to the entire 1000 page roll, it'd be 33 USD).   
+For comparison, I selected 25 random files from the dataset of over 1000. When the random number pointed to a file that was not a good candidate for OCR, like a separator title page, I advanced to the next one that might contain a useful text. I may have done it twice or so. The total cost for GPT4 was 0.83 USD (extrapolating to the entire 1000 page roll, it'd be 33 USD). It is difficult to come up with comparison criteria, since neither scan is perfect, and I don't have the patience to transcribe even a single document in the comparison set. And so I decided to do a subjective count of errors I identify, also noting subjective differences that catch my eye. 
+
+Error counts
+| Page number | GPT4-vision-preview | Tesserace 5.3.3 |
+|-------------|---------------------| ----------------|
+| 0028 | | |
+
+Select qualitative errors
+| Page number | GPT4-vision-preview | Tesserace 5.3.3 |
+|-------------|---------------------| ----------------|
+| 0028 | misspells location Sadkow | fails to identify date \n fails to identify subsection 3.) |
 
 The raw data is as follows:
 
