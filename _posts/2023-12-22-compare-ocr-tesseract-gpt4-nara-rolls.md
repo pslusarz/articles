@@ -1,6 +1,7 @@
 ---
 title: "Combining Tesseract and GPT4 Optical Character Recognition on NARA Rolls"
 date: 2023-12-22
+abstract: By themselves, neither Tesseract nor GPT4 vision preview produce acceptable transcription of scanned German documents. However including Tesseract transcription output in GPT4 prompt substantially improves the final transcription quality.
 ---
 
 "NARA Rolls" is a colloquial name given to a <a href="https://www.archives.gov/research/captured-german-records">collection of captured German World War 2 documents</a> that were microfilmed in the 50s. Here I'm working on T77 roll 619, which I obtained as scanned jpgs after paying National Archives around $130. Just this one roll contains over 1,000 pages, and the entire dataset is approximately 70,000 rolls. This dataset contains a very detailed record of the operations of the Nazi Germany and while technically available to the public, it has been difficult to use in research due to the above described method for obtaining the data, and the format in which it comes. 
@@ -27,7 +28,7 @@ Select qualitative errors
 | 0053 | completely mistranslates "zweier Kocher beendet" as "wieder beschädigt worden" <br> "kurtzfristigen Termin" hallucinated to "fortlaufenden Vorräte" <br> misidentifies location Glowno as Glomun <br> Haute as Hute multiple times | multiple misidentification of "GG" - General Gouvernment as "66" <br> phantom empty lines|
 | 0129 | refused to translate due to personally identifiable info | struggles when stamps and non-linear text present|
 
-Seeing how both GPT4 and Tesseract were struggling with 0053, and that neither was going to be acceptable for this project by itself, I decided to try and include Tesseract extracted text into the GPT4 prompt, and that resulted in a transcription with only 4 errors! The total cost for the 25 pages increased to 0.79 USD. I did error counts on the first 7 pages, and finding them acceptable, decided to only spot-check the remaining ones. Chat GPT's comments and disclaimers were the only issue noted.
+Seeing how both GPT4 and Tesseract were struggling with 0053, and that neither was going to be acceptable for this project by itself, I decided to try and include Tesseract extracted text into the GPT4 prompt, and that resulted in a transcription with only 4 errors! The total cost for the 25 pages increased to 0.79 USD. I did error counts on the first 7 pages, and finding them acceptable, decided to only spot-check the remaining ones. Chat GPT's comments and disclaimers were the only issue noted. I modified the prompt to try to keep it from posting the disclaimers, and re-ran all the data. The modified prompt reduced the number of disclaimers from 3 to 1. Since disclaimers would still have to be dealt with, I chose not to include these extra instructions in the final prompt. Note, even though I am not including the data here for brevity, the second run resulted in slightly different output - some pages were better, some were worse. This can be explained by GPT4's non-deterministic behavior. It is possible that quality of the transcription could be further improved by comparing, say 3 different transcription attempts, but at this point I'm not interested in pursuing that approach due to cost. 
 
 Error counts
 
