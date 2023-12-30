@@ -9,7 +9,7 @@ My journey with this dataset started when I was trying to obtain some data on Ra
 
 Not sure where to begin, I wanted to start by comparing two OCR technologies: Tesseract and GPT4, which recently aquired "vision" capabilities - meaning you can submit an image to it and ask it questions about the image. While I try to be methodical, I realize that this is just a snapshot in time of the capabilities of each of these technologies, and so the main benefit of this project is to obtain insights about the data and challenges with OCR. With these insights, I hope to be able to better approach the rest of this project.
 
-For comparison, I selected 25 random files from the dataset of over 1000. When the random number pointed to a file that was not a good candidate for OCR, like a separator title page, I advanced to the next one that might contain a useful text. I may have done it twice or so. The total cost for GPT4 was 0.83 USD (extrapolating to the entire 1000 page roll, it'd be 33 USD). It is difficult to come up with comparison criteria, since neither scan is perfect, and I don't have the patience to transcribe even a single document in the comparison set. And so I decided to do a subjective count of errors I identify, also noting subjective differences that catch my eye. 
+For comparison, I selected 25 random files from the dataset of over 1000. When the random number pointed to a file that was not a good candidate for OCR, like a separator title page, I advanced to the next one that might contain a useful text. I may have done it twice or so. The total cost for GPT4 was 0.61 USD. It is difficult to come up with comparison criteria, since neither scan is perfect, and I don't have the patience to transcribe even a single document in the comparison set. And so I decided to do a subjective count of errors I identify, also noting subjective differences that catch my eye. 
 
 Error counts
 
@@ -27,7 +27,7 @@ Select qualitative errors
 | 0053 | completely mistranslates "zweier Kocher beendet" as "wieder beschädigt worden" <br> "kurtzfristigen Termin" hallucinated to "fortlaufenden Vorräte" <br> misidentifies location Glowno as Glomun <br> Haute as Hute multiple times | multiple misidentification of "GG" - General Gouvernment as "66" <br> phantom empty lines|
 | 0129 | refused to translate due to personally identifiable info | struggles when stamps and non-linear text present|
 
-Seeing how both GPT4 and Tesseract were struggling with 0053, I decided to try and include Tesseract extracted text into the GPT4 prompt, and that resulted in a transcription that produced only 2 errors!
+Seeing how both GPT4 and Tesseract were struggling with 0053, I decided to try and include Tesseract extracted text into the GPT4 prompt, and that resulted in a transcription with only 4 errors! The total cost for the 25 pages increased to 0.79 USD.
 
 Error counts
 
