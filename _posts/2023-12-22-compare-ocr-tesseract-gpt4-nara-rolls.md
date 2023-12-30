@@ -31,12 +31,17 @@ Seeing how both GPT4 and Tesseract were struggling with 0053, I decided to try a
 
 Error counts
 
-| Page number | GPT4-vision-preview with Tesseract|
-|-------------|---------------------|
-| 0028 | 4 |
-| 0053 | 4 |
-| 0129 | 2 |
-| 0197 | 1 |
+| Page number | GPT4-vision-preview with Tesseract| Comments |
+| ----------- | --------------------------------- | -------- |
+| 0028 | 4 | English disclaimer, surrounds transcribed text, triple tick delimited|
+| 0053 | 4 | |
+| 0129 | 2 | |
+| 0197 | 1 | |
+
+Prompt used in this experiment:
+
+> User: Transcribe the German text in this image exactly. Output a line of text per line of text in the document. To assist you in the trancription, below is Tesseract's attempt at extracting text from this image. Note, Tesseract can be incorrect, but you can use it to help in your transcription. Tesseract text (enclosed in ```):
+> \[ triple quoted Tesseract text follows \]
 
 
 The raw data is as follows:
