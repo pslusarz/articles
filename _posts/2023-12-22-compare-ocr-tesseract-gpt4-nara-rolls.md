@@ -9,11 +9,11 @@ My journey with this dataset started when I was trying to obtain some data on Ra
 
 Not sure where to begin, I wanted to start by comparing two OCR technologies: Tesseract and GPT4, which recently aquired "vision" capabilities - meaning you can submit an image to it and ask it questions about the image. While I try to be methodical, I realize that this is just a snapshot in time of the capabilities of each of these technologies, and so the main benefit of this project is to obtain insights about the data and challenges with OCR. With these insights, I hope to be able to better approach the rest of this project.
 
-For comparison, I selected 25 random files from the dataset of over 1000. When the random number pointed to a file that was not a good candidate for OCR, like a separator title page, I advanced to the next one that might contain a useful text. I may have done it twice or so. The total cost for GPT4 was 0.61 USD. It is difficult to come up with comparison criteria, since neither scan is perfect, and I don't have the patience to transcribe even a single document in the comparison set. And so I decided to do a subjective count of errors I identify, also noting subjective differences that catch my eye. 
+For comparison, I selected 25 random files from the dataset of over 1000. When the random number pointed to a file that was not a good candidate for OCR, like a separator title page, I advanced to the next one that might contain a useful text. I may have done it twice or so. The total cost for GPT4 was 0.61 USD. It is difficult to come up with comparison criteria, since neither scan is perfect, and I don't have the patience to transcribe even a single document in the comparison set. Even if such were present, it would be unclear on how to count missing, misidentified, or extra items. And so I decided to do a subjective count of errors I identify, when reading the documents side by side. Generally, a missing or misidentified word got counted as 1 error, and I ignored minor punctuation issues.
 
 Error counts
 
-| Page number | GPT4-vision-preview | Tesserace 5.3.3 |
+| Page number | GPT4-vision-preview | Tesseract 5.3.3 |
 |-------------|---------------------| ----------------|
 | 0028 | 6 | 20 |
 | 0053 | 24 | 17 |
