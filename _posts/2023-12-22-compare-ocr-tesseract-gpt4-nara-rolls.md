@@ -17,6 +17,7 @@ Error counts
 |-------------|---------------------| ----------------|
 | 0028 | 6 | 20 |
 | 0053 | 24 | 17 |
+| 0129 | 99 | 20 |
 
 Select qualitative errors
 
@@ -24,8 +25,18 @@ Select qualitative errors
 |-------------|---------------------| ----------------|
 | 0028 | misspells location Sadkow | fails to identify document dates, <br>fails to identify subsection 3.) <br> phantom empty lines|
 | 0053 | completely mistranslates "zweier Kocher beendet" as "wieder beschädigt worden" <br> "kurtzfristigen Termin" hallucinated to "fortlaufenden Vorräte" <br> misidentifies location Glowno as Glomun <br> Haute as Hute multiple times | multiple misidentification of "GG" - General Gouvernment as "66" <br> phantom empty lines|
+| 0129 | refused to translate due to personally identifiable info | struggles when stamps and non-linear text present|
 
 Seeing how both GPT4 and Tesseract were struggling with 0053, I decided to try and include Tesseract extracted text into the GPT4 prompt, and that resulted in a transcription that produced only 2 errors!
+
+Error counts
+
+| Page number | GPT4-vision-preview with Tesseract|
+|-------------|---------------------|
+| 0028 | 4 |
+| 0053 | 4 |
+| 0129 | 2 |
+
 
 The raw data is as follows:
 
