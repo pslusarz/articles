@@ -27,7 +27,7 @@ Select qualitative errors
 | 0053 | completely mistranslates "zweier Kocher beendet" as "wieder beschädigt worden" <br> "kurtzfristigen Termin" hallucinated to "fortlaufenden Vorräte" <br> misidentifies location Glowno as Glomun <br> Haute as Hute multiple times | multiple misidentification of "GG" - General Gouvernment as "66" <br> phantom empty lines|
 | 0129 | refused to translate due to personally identifiable info | struggles when stamps and non-linear text present|
 
-Seeing how both GPT4 and Tesseract were struggling with 0053, I decided to try and include Tesseract extracted text into the GPT4 prompt, and that resulted in a transcription with only 4 errors! The total cost for the 25 pages increased to 0.79 USD.
+Seeing how both GPT4 and Tesseract were struggling with 0053, and that neither was going to be acceptable for this project by itself, I decided to try and include Tesseract extracted text into the GPT4 prompt, and that resulted in a transcription with only 4 errors! The total cost for the 25 pages increased to 0.79 USD.
 
 Error counts
 
@@ -37,6 +37,9 @@ Error counts
 | 0053 | 4 | |
 | 0129 | 2 | |
 | 0197 | 1 | |
+| 0200 | 1 | |
+| 0235 | 0 | |
+
 
 Prompt used in this experiment:
 
