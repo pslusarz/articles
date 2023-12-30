@@ -1,4 +1,4 @@
 ---
-title: Collection of various articles
+title: by Paul Slusarz 
 ---
 
