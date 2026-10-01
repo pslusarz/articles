@@ -26,3 +26,34 @@ details.deep-dive {
     margin-bottom: 0;
   }
 }
+
+// One colour per role, shared by the state diagram, the transcripts and the
+// board views, so the same thing is the same colour wherever it appears.
+.tok { border-radius: 2px; padding: 0 0.25em; font-weight: 600; }
+.tok-user   { color: #1a4f8a; background: #e7effa; }
+.tok-call   { color: #8a5a00; background: #fdf0d5; }
+.tok-result { color: #1d6b3f; background: #e3f3e8; }
+.tok-wait   { color: #a8322d; background: #fbe6e4; }
+
+pre.wire {
+  font-size: 0.76rem;
+  line-height: 1.55;
+  background: #fff;
+  border: 1px solid #e3e3e3;
+  overflow-x: auto;
+}
+
+figure.panel { margin: 0 0 1rem 0; }
+figure.panel > figcaption {
+  font-size: 0.78rem;
+  color: #666;
+  margin-bottom: 0.35rem;
+  font-weight: 600;
+}
+
+.sbs { display: flex; flex-wrap: wrap; gap: 1rem; }
+.sbs > figure.panel { flex: 1 1 19rem; min-width: 0; }
+
+// Code shown two-up needs to fit a half-width column.
+.sbs pre, .sbs pre > code { font-size: 0.72rem; line-height: 1.5; }
+.sbs pre { overflow-x: auto; }
