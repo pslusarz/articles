@@ -21,6 +21,8 @@ For comparison, I selected 25 random files from the dataset of over 1000. When t
 
 ### Error counts
 
+I scored three pages this way. That was enough to see the pattern, so I did not count the remaining 22.
+
 | Page number | GPT4-vision-preview | Tesseract 5.3.3 |
 |-------------|---------------------| ----------------|
 | 0028 | 6 | 20 |
