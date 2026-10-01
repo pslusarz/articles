@@ -1,2 +1,9 @@
-theme: minima
 title: Articles
+url: https://pslusarz.github.io
+baseurl: /articles
+
+theme: minima
+
+markdown: kramdown
+kramdown:
+  input: GFM
