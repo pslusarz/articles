@@ -1,4 +1,5 @@
 ---
-title: by Paul Slusarz 
+title: by Paul Slusarz
+layout: home
 ---
 

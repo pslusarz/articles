@@ -7,3 +7,11 @@ theme: minima
 markdown: kramdown
 kramdown:
   input: GFM
+
+# The legacy builder got these from jekyll-default-layout.
+defaults:
+  - scope:
+      path: ""
+      type: posts
+    values:
+      layout: post
