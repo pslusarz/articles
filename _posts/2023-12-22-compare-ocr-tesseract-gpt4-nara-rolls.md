@@ -5,15 +5,21 @@ date: 2023-12-22
 
 **Summary:** By themselves, neither Tesseract nor GPT4 vision preview produce acceptable transcription of scanned German documents. However including Tesseract transcription output in GPT4 prompt substantially improves the final transcription quality.
 
+## The dataset
+
 "NARA Rolls" is a colloquial name given to a <a href="https://www.archives.gov/research/captured-german-records">collection of captured German World War 2 documents</a> that were microfilmed in the 50s. Here I'm working on T77 roll 619, which I obtained as scanned jpgs after paying National Archives around $130. Just this one roll contains over 1,000 pages, and the entire dataset is approximately 70,000 rolls. This dataset contains a very detailed record of the operations of the Nazi Germany and while technically available to the public, it has been difficult to use in research due to the above described method for obtaining the data, and the format in which it comes. 
 
 My journey with this dataset started when I was trying to obtain some data on Radom pistols, quite a trifling matter. After seeing the enormity of this collection, I realized it presents unique insight into the state operations. While not complete, the scale and level of detail of this documentation make it unprecedented. In addition to historic knowledge of WW2, one may also be able to gleam answers to fundamental questions about statehood, like what holds a state together, how the information and decisions flow through the various branches, and what seeds of demise may exist in its institutions. However, to make it possible to gain these insights, researchers will need to be able to query the entire dataset efficiently. I thought about this for awhile, and I don't think there's any fundamental barrier to making that happen. Given off the shelf technologies, it is feasible to build NARA Rolls into a multi lingual searchable dataset that can be added to over time.
+
+## Method
 
 Not sure where to begin, I wanted to start by comparing two image to text technologies (elsewhere known as OCR, optical character recognition): Tesseract and GPT4, which recently aquired <a href="https://platform.openai.com/docs/guides/vision">"vision"</a> capabilities - meaning you can submit an image to it and ask it questions about the image. While I try to be methodical, I realize that this is just a snapshot in time of the capabilities of each of these technologies, and so the main benefit of this step is to obtain insights about the data and challenges with OCR. With these insights, I hope to be able to better approach the rest of this project.
 
 For comparison, I selected 25 random files from the dataset of over 1000. When the random number pointed to a file that was not a good candidate for OCR, like a separator title page, I advanced to the next one that might contain a useful text. I may have done it twice or so. The total cost for the initial run of GPT4 was 0.61 USD. It is difficult to come up with comparison criteria, since neither scan is perfect, and I don't have the patience to transcribe even a single document in the comparison set. Even if there was such golden standard, it would be unclear on how to count missing, misidentified, or extra items. And so I decided to do a subjective count of errors I identify, when reading the documents side by side. Generally, a missing or misidentified word got counted as 1 error, and I ignored minor punctuation issues.
 
-Error counts
+## Each tool on its own
+
+### Error counts
 
 | Page number | GPT4-vision-preview | Tesseract 5.3.3 |
 |-------------|---------------------| ----------------|
@@ -21,7 +27,10 @@ Error counts
 | 0053 | 24 | 17 |
 | 0129 | 99 | 20 |
 
-Select qualitative errors
+### Select qualitative errors
+
+<details class="deep-dive" markdown="1">
+<summary>What each tool actually got wrong, page by page</summary>
 
 | Page number | GPT4-vision-preview | Tesseract 5.3.3 |
 |-------------|---------------------| ----------------|
@@ -29,9 +38,13 @@ Select qualitative errors
 | 0053 | completely mistranslates "zweier Kocher beendet" as "wieder beschädigt worden" <br> "kurtzfristigen Termin" hallucinated to "fortlaufenden Vorräte" <br> misidentifies location Glowno as Glomun <br> Haute as Hute multiple times | multiple misidentification of "GG" - General Gouvernment as "66" <br> phantom empty lines|
 | 0129 | refused to translate due to personally identifiable info | struggles when stamps and non-linear text present|
 
+</details>
+
+## Tesseract output in the GPT4 prompt
+
 Seeing how both GPT4 and Tesseract were struggling, and that neither was going to be acceptable for this project by itself, I decided to try and include Tesseract extracted text into the GPT4 prompt, and that resulted in a transcription with only 4 errors! The hallucinations were also gone. The total cost for the 25 pages increased to 0.79 USD. I did error counts on the first 7 pages, and finding them acceptable, decided to only spot-check the remaining ones. Chat GPT's comments and disclaimers were the only issue noted. I modified the prompt to try to keep it from posting the disclaimers, and re-ran all the data. The modified prompt reduced the number of disclaimers from 3 to 1. Since disclaimers would still have to be dealt with, I chose not to include these extra instructions in the final prompt. Note, even though I am not including the data here for brevity, the second run resulted in slightly different output - some pages were transcribed better, some were worse. This can be explained by GPT4's non-deterministic behavior. It is possible that quality of the transcription could be further improved by comparing, say, 3 different transcription attempts, but at this point I'm not interested in pursuing such approach due to cost and diminishing returns. 
 
-Error counts
+### Error counts, with Tesseract in the prompt
 
 | Page number | GPT4-vision-preview with Tesseract| Comments |
 | ----------- | --------------------------------- | -------- |
@@ -42,17 +55,22 @@ Error counts
 | 0200 | 1 | |
 | 0235 | 0 | |
 | 0268 | 3 | |
-| 612 | | English disclaimer in beginning and end, no delimiter|
-| 820 | | English disclaimer, surrounds transcribed text, triple tick delimited |
+| 0612 | not counted | English disclaimer in beginning and end, no delimiter|
+| 0820 | not counted | English disclaimer, surrounds transcribed text, triple tick delimited |
 
 
-Prompt used in this experiment:
+### The prompt
 
 > User: Transcribe the German text in this image exactly. Output a line of text per line of text in the document. To assist you in the trancription, below is Tesseract's attempt at extracting text from this image. Note, Tesseract can be incorrect, but you can use it to help in your transcription. Tesseract text (enclosed in ```):
 > \[ triple quoted Tesseract text follows \]
 
 
+## The data
+
 In case someone has more insights, feel free to peruse the data used in this experiment:
+
+<details class="deep-dive" markdown="1">
+<summary>All 25 pages: the scan, and each of the three transcriptions</summary>
 
 | NARA page scan | GPT4-vision-preview | Tesseract 5.3.3 | GPT4 with Tesseract |
 | -------------- | ------------------- | --------------- | ------------------- |
@@ -81,5 +99,7 @@ In case someone has more insights, feel free to peruse the data used in this exp
 | [0894.jpg](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0894.jpg) | [0894-gpt4.txt](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0894-gpt4.txt) | [0894-tess.txt](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0894-tess.txt) | [0894-gpt4-with-tess.txt](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0894-gpt4-with-tess.txt) |
 | [0931.jpg](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0931.jpg) | [0931-gpt4.txt](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0931-gpt4.txt) | [0931-tess.txt](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0931-tess.txt) | [0931-gpt4-with-tess.txt](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/0931-gpt4-with-tess.txt) |
 | [1042.jpg](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/1042.jpg) | [1042-gpt4.txt](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/1042-gpt4.txt) | [1042-tess.txt](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/1042-tess.txt) | [1042-gpt4-with-tess.txt](/articles/docs/assets/2023-12-22-compare-ocr-tesseract-gpt4-nara-rolls/raw/1042-gpt4-with-tess.txt) |
+
+</details>
 
 

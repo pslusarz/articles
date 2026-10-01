@@ -1,0 +1,28 @@
+---
+---
+
+@import "minima";
+
+details.deep-dive {
+  border: 1px solid $grey-color-light;
+  border-radius: 3px;
+  padding: $spacing-unit / 3 $spacing-unit / 2;
+  margin-bottom: $spacing-unit;
+
+  > summary {
+    cursor: pointer;
+    font-weight: 600;
+    color: $brand-color;
+    list-style-position: outside;
+  }
+
+  &[open] > summary {
+    margin-bottom: $spacing-unit / 2;
+    border-bottom: 1px solid $grey-color-light;
+    padding-bottom: $spacing-unit / 4;
+  }
+
+  table {
+    margin-bottom: 0;
+  }
+}
