@@ -7,9 +7,9 @@ date: 2026-10-01
 ReAct agent, with no planner and no framework. Extending that loop to tools that have
 not finished yet is what turns a static transcript into an agent you can keep talking
 to. The hard part is not running the tool in the background; it is keeping the
-conversation coherent while it runs. I tried this two ways — a message board that is
-rewritten every turn, and Anthropic's Claude Agent SDK — and this is what each gets
-right and wrong.
+conversation coherent while it runs, and knowing when to give up on it. I tried this
+two ways — a message board that is rewritten every turn, and Anthropic's Claude Agent
+SDK — and this is what each gets right and wrong.
 
 If you have ever typed a steering message to GitHub Copilot while it was waiting on a
 long tool call, and watched your message sit there until the tool finished, you already
@@ -32,10 +32,15 @@ mechanisms that do the job, so they can be recognised in whatever ships next.
   a linear history cannot say what is still owed. Restructuring the history the agent
   reads into a **message board** — rewritten every turn, tool calls attached to the
   message that caused them — keeps the agent coherent for far longer.
+- **A tool that never finishes needs a clock, and the clock belongs to the harness.**
+  But the decision belongs to the model. Deliver the expiry as an *event* rather than
+  acting on it, and the agent simply gets a turn in which to look and make up its own
+  mind. It is the same mechanism again, with nothing new in the loop.
 - **Anthropic's SDK gets the mechanics and misses the bookkeeping.** Background work,
-  cancellation and the unprompted turn are all native. But every asynchronous tool has
-  to be disguised as an agent, the framework forbids the model from checking on
-  progress, and nothing stops a pending task from quietly ageing out of context.
+  cancellation and the unprompted turn are all native, and a harness-driven timeout
+  ports over intact. But every asynchronous tool has to be disguised as an agent,
+  nothing stops a pending task from quietly ageing out of context, and the framework
+  forbids the model from inspecting progress — though not, it turns out, your code.
 
 The code is in [pslusarz/async-agent](https://github.com/pslusarz/async-agent).
 
@@ -225,12 +230,80 @@ Follow up on your own question rather than on the agent's, and the task node is 
 childless and waits forever for an answer that already exists a few lines away.
 </details>
 
+## Knowing when to give up
+
+One case is still open: the tool that never finishes. Someone has to decide to stop it,
+and that decision splits awkwardly. Only the harness knows that time has passed — the
+model has no clock and cannot notice elapsed time between turns. But only the model
+knows whether the thing it is waiting for is worth waiting for.
+
+So the harness does not decide. Every tool call carries one extra argument injected
+into its schema — how long the model expects the call to take — and when that lapses
+the harness puts an **overdue event** on the same queue as user messages and finished
+results. Which means the agent gets a turn. Nothing new in the loop again.
+
+The instruction to consider killing the task lives on the event and nowhere else: not
+in the system prompt, not in any tool description. Only the harness knows the clock ran
+out, so only the harness mentions it, and only when it is true.
+
+<pre class="wire"><span class="tok tok-wait">..</span> #1 <span class="tok tok-user">user</span>  'temperature in Warsaw, MO?'
+  <span class="tok tok-wait">..</span> #2 agent 'Checking that right now!'
+     <span class="tok tok-call">call #3 temperature(Warsaw)</span> <span class="tok tok-wait">KILLED</span>
+    <span class="tok tok-result">ok</span> #4 agent 'Let me see how that is coming along.'  <span class="tok tok-wait">&lt;- overdue</span>
+       <span class="tok tok-call">call #5 tail(3)</span> <span class="tok tok-result">almost done...</span>
+      <span class="tok tok-result">ok</span> #6 agent "It's almost there, just about finished!"
+         <span class="tok tok-call">call #7 tail(3)</span> <span class="tok tok-result">almost done... (nothing has moved)</span>
+        <span class="tok tok-result">ok</span> #8 agent "I'll wait — I'll be told when it moves."
+    <span class="tok tok-result">ok</span> #9 agent 'Let me see how it is doing!'           <span class="tok tok-wait">&lt;- overdue</span>
+       <span class="tok tok-call">call #10 tail(3)</span> <span class="tok tok-wait">I'm stuck and cannot make progress.</span>
+      <span class="tok tok-result">ok</span> #11 agent 'That has stalled. Stopping it.'
+         <span class="tok tok-call">call #12 kill(3)</span> <span class="tok tok-wait">killed — out of retries, ask instead</span>
+          <span class="tok tok-result">ok</span> #13 agent <span class="tok tok-call">call #14 new_thread(...)</span>
+<span class="tok tok-result">ok</span> #15 agent 'The tool keeps stalling. How would you like to proceed?'
+</pre>
+
+The agent was asked twice and answered differently each time. At `#4` the task said it
+was almost done, so it left it alone — which re-arms the timer, so the question comes
+back. At `#9` the same task said it was stuck, and it killed it.
+
+This is the point at which the board earns its keep. `#4` and `#9` are **siblings**:
+two separate visits to the same task, ten seconds apart, each hanging off the call it
+is about rather than being appended to the end of a conversation. And `#15` is a **new
+root**, because a thread that has run out of things to try is a bad place to ask a
+question — the agent opened a fresh one to ask it.
+
+<details class="deep-dive" markdown="1">
+<summary>Two things I got wrong on the way here</summary>
+
+**Budgets for the thing, not the branch.** Killing a task spends from a retry budget,
+and my first version counted kills per conversation thread. That is wrong as soon as
+the agent fires three lookups at once: one failure drains the allowance for all of
+them. The budget is now counted along the *branch* that led to the call — ancestors
+only — so calls made side by side never spend each other's retries. The tree already
+had the information; I just was not reading it.
+
+**Forbidding is weaker than informing.** Given every tool for the whole turn, the agent
+polled: it called `tail` three times in a row, using it as a sleep, burning eleven
+seconds inside a single turn — and since the loop is one thread, that stalls the whole
+conversation. Writing "looking twice in the same breath tells you nothing" into the tool
+description did not stop it. What stopped it was giving it the fact instead: `tail` now
+says when nothing has moved since the last look, and promises it will be told when
+something does. The agent replied *"I'll keep waiting — no need to keep checking since
+I'll be notified as soon as the result comes in"* and ended its turn. The promise is
+kept by the re-armed timer, which is the only reason it is honest to make it.
+
+The general shape: I kept reaching for restrictions — drop the tool from the schema,
+cap the number of calls — and every one of them removed a capability I wanted. Telling
+the model something true about the world worked better than taking its options away.
+</details>
+
 ## The same thing on Anthropic's SDK
 
 I rebuilt all of it on the [Claude Agent SDK](https://github.com/anthropics/claude-agent-sdk-python)
-as a control, to see which parts are already solved. Several are, and genuinely well:
-starting background work, stopping it, and waking the conversation when it finishes are
-all native. The unprompted turn — a finished task producing a turn nobody asked for — is
+as a control — first the asynchronous conversation, then the timeouts on top of it — to
+see which parts are already solved. Several are, and genuinely well: starting
+background work, stopping it, and waking the conversation when it finishes are all
+native. The unprompted turn — a finished task producing a turn nobody asked for — is
 built in, which is most of what the event loop was for. That is a real saving in
 scaffolding.
 
@@ -313,11 +386,19 @@ inline and hangs forever.
 
 The idiom is not native, and you can tell from what you have to do to get it:
 
-- **The agent will not look in on running work, and you cannot talk it round.** The
-  launch placeholder hands over an output file and in the same breath says not to read
-  it, because it is the subagent's entire transcript and would flood the context. That
-  instruction is in the framework, not in your prompt. So there is no `tail` here: asked
-  how something is going, the agent can only repeat that it is going.
+- **The model may not look in on running work — but your code may.** The launch
+  placeholder hands over an output file and in the same breath says not to read it,
+  because it is the subagent's entire transcript and would flood the context. That
+  instruction is in the framework, not in your prompt. So there is no `tail` here:
+  asked how something is going, the agent can only repeat that it is going.
+
+  The prohibition binds the *model*, though, not the process. That output file is
+  live-updating JSONL sitting on disk, and nothing stops the harness from reading it.
+  Mine does: it pulls the last couple of events out and folds one line into the
+  timeout nudge, so the model decides on evidence rather than on elapsed time alone.
+  And if the harness can read it, so can anything else you are building — a UI is free
+  to render a progress indicator for work the agent itself is forbidden to discuss.
+  The information is not missing. It is just not routed to the model.
 - **Nothing re-renders outstanding work.** The only record that a task is running is the
   placeholder where it launched — an ordinary message in an append-only transcript. As
   the conversation grows or is compacted, that placeholder ages out and takes the
@@ -328,6 +409,20 @@ There is a side effect worth noticing in the first point. Because the retry now 
 *inside* the subagent, the parent never sees the failed call or the correction — it gets
 only the final answer. That is cleaner, and strictly less observable. A subagent
 correcting itself forever looks, from outside, exactly like one that is merely slow.
+
+The timeouts, on the other hand, port over almost intact — because the clock was never
+part of the API to begin with. `TaskStarted` carries a task id and the session can be
+spoken to at any moment, which is the whole of what a timer needs. Given the nudge, the
+agent behaves just as it does on the board: told once that a task had been running
+twenty seconds with an empty transcript it judged that "within normal startup range" and
+left it alone, and told again twenty seconds later it said it was "still empty after two
+check-ins" and called `TaskStop`. Nobody typed anything after the opening question.
+
+What does not port is the model's own judgement about how long to wait. The
+backgrounding schema belongs to the framework, so there is nowhere to put an expected
+interval, and the timeout becomes your policy instead of the model's estimate. And
+speaking to the session is the only way in, so the nudge arrives as a *user* turn: it
+has to be labelled as machinery, or the agent thanks you for checking in on it.
 
 <details class="deep-dive" markdown="1">
 <summary>Testing it is its own project: there is no replay story for an SDK that shells out</summary>
@@ -348,9 +443,9 @@ Getting a replay to match a recording then takes more than it sounds: the reques
 be re-signed, because SigV4 covers the host and the host just changed; three kinds of
 per-run identifier are echoed back into later requests and have to be renumbered rather
 than flattened; and the CLI reports how long a subagent took, which a replay does not
-spend. Two tests cannot be replayed at all — they assert on interleaving, and latency is
-exactly what the cache removes. A response cache can reproduce *what* was said, never
-*when*.
+spend. Some tests cannot be replayed at all — they turn on interleaving or on a
+wall-clock timer, and latency is exactly what the cache removes. A response cache can
+reproduce *what* was said, never *when*.
 
 The [implementation](https://github.com/pslusarz/async-agent/blob/main/src/main/exp4/cache.py)
 and the [notes](https://github.com/pslusarz/async-agent#caching-which-is-not-optional)
@@ -373,5 +468,6 @@ and I expect to spend some time trying to get these ideas into the mainstream fr
 rather than leaving them in an experiment.
 
 If you are evaluating a framework, the question to ask is not whether it can run a tool
-in the background. It is what the model is shown about work that has not finished, and
-whether it can still see it ten messages later.
+in the background. It is what the model is shown about work that has not finished,
+whether it can still see it ten messages later, and who gets to decide when to stop
+waiting.
