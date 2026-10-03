@@ -24,12 +24,11 @@ defaults:
     values:
       layout: post
 
-# Set once Discussions is on and the giscus app is installed.
-# giscus:
-#   repo: pslusarz/articles
-#   repo_id:
-#   category: Announcements
-#   category_id:
+giscus:
+  repo: pslusarz/articles
+  repo_id: R_kgDOK80WSw
+  category: Announcements
+  category_id: DIC_kwDOK80WS84DG7Pv
 
 # GoatCounter site code, without the .goatcounter.com suffix.
 # goatcounter: pslusarz
