@@ -1,13 +1,20 @@
 title: Articles
 description: Write-ups of things I have built or investigated.
+author: Paul Slusarz
 url: https://pslusarz.github.io
 baseurl: /articles
+lang: en
 
 theme: minima
 
 markdown: kramdown
 kramdown:
   input: GFM
+
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+  - jekyll-sitemap
 
 # The legacy builder got these from jekyll-default-layout.
 defaults:
@@ -16,3 +23,13 @@ defaults:
       type: posts
     values:
       layout: post
+
+# Set once Discussions is on and the giscus app is installed.
+# giscus:
+#   repo: pslusarz/articles
+#   repo_id:
+#   category: Announcements
+#   category_id:
+
+# GoatCounter site code, without the .goatcounter.com suffix.
+# goatcounter: pslusarz

@@ -6,7 +6,7 @@
 details.deep-dive {
   border: 1px solid $grey-color-light;
   border-radius: 3px;
-  padding: $spacing-unit / 3 $spacing-unit / 2;
+  padding: $spacing-unit * 0.33 $spacing-unit * 0.5;
   margin-bottom: $spacing-unit;
 
   > summary {
@@ -17,9 +17,9 @@ details.deep-dive {
   }
 
   &[open] > summary {
-    margin-bottom: $spacing-unit / 2;
+    margin-bottom: $spacing-unit * 0.5;
     border-bottom: 1px solid $grey-color-light;
-    padding-bottom: $spacing-unit / 4;
+    padding-bottom: $spacing-unit * 0.25;
   }
 
   table {

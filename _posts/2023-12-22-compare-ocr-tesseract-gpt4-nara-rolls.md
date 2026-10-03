@@ -1,6 +1,7 @@
 ---
 title: "Combining Tesseract and GPT4 Optical Character Recognition on NARA Rolls"
 date: 2023-12-22
+description: "Tesseract and GPT-4 vision each transcribe scanned WW2 German documents badly. Putting Tesseract's output into the GPT-4 prompt cuts the error count to single digits."
 ---
 
 **Summary:** By themselves, neither Tesseract nor GPT4 vision preview produce acceptable transcription of scanned German documents. However including Tesseract transcription output in GPT4 prompt substantially improves the final transcription quality.

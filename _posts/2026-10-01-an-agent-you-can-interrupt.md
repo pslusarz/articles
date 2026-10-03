@@ -1,6 +1,7 @@
 ---
 title: "An agent you can interrupt"
 date: 2026-10-01
+description: "Keeping an LLM agent responsive while its tools are still running: a message board instead of a transcript, progress probes, timeouts and cancellation, compared against Anthropic's Claude Agent SDK."
 ---
 
 **Summary:** A plain event loop is enough to make a conversational LLM behave like a
