@@ -32,7 +32,7 @@ giscus:
 
 # GA4 measurement id. minima's bundled snippet is Universal Analytics, which
 # no longer collects anything; _includes/google-analytics.html overrides it.
-# google_analytics: G-XXXXXXXXXX
+google_analytics: G-F2MXX01NDZ
 
 # Search Console token; jekyll-seo-tag renders it as the verification meta tag.
-# google_site_verification:
+google_site_verification: AVzcADN-dRkq_r0PnwB9fYiyu_u6NYh5oUeiBXekhhA
