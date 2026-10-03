@@ -57,3 +57,14 @@ figure.panel > figcaption {
 // Code shown two-up needs to fit a half-width column.
 .sbs pre, .sbs pre > code { font-size: 0.72rem; line-height: 1.5; }
 .sbs pre { overflow-x: auto; }
+
+.post-comments {
+  margin-top: $spacing-unit * 1.5;
+  padding-top: $spacing-unit;
+  border-top: 1px solid $grey-color-light;
+
+  > h2 {
+    font-size: 22px;
+    margin-bottom: $spacing-unit * 0.5;
+  }
+}

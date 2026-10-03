@@ -20,7 +20,10 @@ layout: default
   </div>
 
   {%- if site.giscus.repo -%}
-    {%- include giscus.html -%}
+    <section class="post-comments">
+      <h2>Comments and reactions</h2>
+      {%- include giscus.html -%}
+    </section>
   {%- endif -%}
 
   <a class="u-url" href="{{ page.url | relative_url }}" hidden></a>
