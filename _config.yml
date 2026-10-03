@@ -30,5 +30,9 @@ giscus:
   category: Announcements
   category_id: DIC_kwDOK80WS84DG7Pv
 
-# GoatCounter site code, without the .goatcounter.com suffix.
-# goatcounter: pslusarz
+# GA4 measurement id. minima's bundled snippet is Universal Analytics, which
+# no longer collects anything; _includes/google-analytics.html overrides it.
+# google_analytics: G-XXXXXXXXXX
+
+# Search Console token; jekyll-seo-tag renders it as the verification meta tag.
+# google_site_verification:
