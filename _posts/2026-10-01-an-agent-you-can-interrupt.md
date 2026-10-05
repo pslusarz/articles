@@ -37,6 +37,11 @@ mechanisms that do the job, so they can be recognised in whatever ships next.
   But the decision belongs to the model. Deliver the expiry as an *event* rather than
   acting on it, and the agent simply gets a turn in which to look and make up its own
   mind. It is the same mechanism again, with nothing new in the loop.
+- **The agent's record and the user's transcript are not the same text.** Once a UI
+  draws what is running, most of the agent's narration is redundant — but deleting it
+  would delete the agent's own context along with it. Deciding per message, from what
+  triggered the turn, which words are for the reader keeps the board intact and the
+  chat quiet.
 - **Anthropic's SDK gets the mechanics and misses the bookkeeping.** Background work,
   cancellation and the unprompted turn are all native, and a harness-driven timeout
   ports over intact. But every asynchronous tool has to be disguised as an agent,
@@ -297,6 +302,129 @@ The general shape: I kept reaching for restrictions — drop the tool from the s
 cap the number of calls — and every one of them removed a capability I wanted. Telling
 the model something true about the world worked better than taking its options away.
 </details>
+
+## Putting it all together in a responsive application
+
+Everything so far is about what the *agent* reads. The person reading the chat is shown
+none of it, deliberately: the transcript exposes nothing about tasks, threads or
+progress, and if you want to know how something is going, you ask. That is a defensible
+rule for a conversation and a poor one for an application, where a slow tool and a hung
+one look exactly alike.
+
+So the last experiment is the same harness with the pending work drawn. Every call the
+agent starts appears beside the turn that started it — a spinner carrying the tool's
+name and arguments while it runs, shrinking to a green dot when it returns and a red one
+when it fails or is killed.
+
+![Three schedule lookups and a temperature lookup in flight at once. Jane's schedule is still spinning, Jack's and Joe's have shrunk to green dots, and the temperature question asked in the middle has already been answered.](/articles/docs/assets/2026-10-01-an-agent-you-can-interrupt/responsive-app.png)
+
+Three calendars and a temperature are in flight at once. Jack and Joe have come back,
+Jane has not, and the question asked in the middle has already been answered.
+
+### The page has to be told, not asked
+
+The first version polled: the browser re-fetched the transcript and the task list once a
+second. That is the wrong mechanism here for precisely the reason this project exists. A
+task finishing, or the agent speaking unprompted, is not the consequence of anything the
+user did, so there is no request for the response to hang off. The page asks constantly
+because it has no way of being told.
+
+The harness already knew. The agent hands every call it starts, and every one that
+settles, to a listener, and every change to the board bumps a version counter. The page
+holds a single `EventSource`; the server blocks until that counter moves and then pushes
+a new transcript. One connection, a write only when something actually happened, and the
+blocking wait doubles as a keepalive. It is the same event one layer further out — the
+UI subscribes to the thing that was already granting the agent its turns.
+
+### Teaching it to stop narrating
+
+Drawing the tasks makes most of the agent's commentary redundant, and there was a lot of
+it. Every look began with "Let me take a peek at how that's coming along!" before
+anything useful was said, and every expired timer produced a paragraph of percentages
+that the spinner was displaying anyway.
+
+The obvious fix — instruct the model to be quiet — is the wrong one, because those words
+are not decoration. They are the agent's own record of why it did what it did, and the
+next turn reads them back. What needed to change was not whether the agent speaks but
+who it is speaking to.
+
+So the harness decides, per message. A turn is triggered by one of three things — the
+user, a result landing, or a timer — and each message the turn writes either looks at a
+task, starts one, or is the turn's last word. Nine combinations, of which three are the
+agent talking to the reader:
+
+| the turn was triggered by | a look at a task | starting work | the last word |
+|---|---|---|---|
+| **the user** | board only | **shown** | **shown** |
+| **a result landing** | board only | board only | **shown** |
+| **a timer** | board only | board only | board only |
+
+- **A look is never shown**, not even when the user asked for it, because the turn's
+  last word already reports what the look found. Showing both is what produced the
+  duplicate reply.
+- **A timer-driven turn says nothing at all.** It still happens — the agent looks,
+  decides, and records the decision — but the user sees a spinner still spinning, which
+  is the same fact without the prose.
+- **Work started after a result is silent**, because the agent is not answering yet. It
+  is retrying.
+
+Nothing is deleted. Everything suppressed still goes on the board; the agent's context
+is exactly what it was. Only the projection into the chat is filtered.
+
+### Failures, and the retries behind them
+
+A call that is killed, or that settles as a failure, turns its dot red. That is the one
+piece of task state the user gets without asking for it.
+
+The retry behind it stays quiet, and the suppression is of words rather than of rows, so
+a silent restart still puts a fresh spinner on the screen — you watch it try again
+without being told that it is. What does break the silence is giving up: once the
+retries are spent, the kill result tells the agent to open a new thread and ask, and the
+message `new_thread` posts is shown, because putting a question to the user is not
+bookkeeping.
+
+### What the board held, and what reached the screen
+
+This is the board behind the screenshot above, at that moment. The gutter marks what the
+reader got.
+
+<pre class="wire"><span class="tok tok-result">chat</span> #1 <span class="tok tok-user">user</span>  'when can Jane, Jack and Joe meet today?'
+<span class="tok tok-result">chat</span>   #2 agent 'I'll look up all three schedules at the same time!'
+          <span class="tok tok-call">call #3 schedule(Jane)</span> <span class="tok tok-wait">PENDING</span>
+          <span class="tok tok-call">call #4 schedule(Jack)</span> <span class="tok tok-result">free 10-14</span>
+          <span class="tok tok-call">call #5 schedule(Joe)</span>  <span class="tok tok-result">free 11-15</span>
+<span class="tok tok-result">chat</span>     #6 <span class="tok tok-user">user</span>  'meanwhile, what's the temperature in Austin TX?'
+<span class="tok tok-wait">····</span>       #7 agent <span class="tok tok-call">tail(3)</span> 7%  <span class="tok tok-call">tail(4)</span> 19%  <span class="tok tok-call">tail(5)</span> 21%
+<span class="tok tok-result">chat</span>         #11 agent 'Kicked off Austin. Jane 7%, Jack 19%, Joe 21%.'
+                 <span class="tok tok-call">call #12 temperature(Austin)</span> <span class="tok tok-result">72F</span>
+<span class="tok tok-result">chat</span>           #25 agent 'Austin, TX is currently a comfortable 72°F!'
+<span class="tok tok-wait">····</span>     #13 agent 'Let me check on Joe.'  <span class="tok tok-call">tail(5)</span> 79%
+<span class="tok tok-wait">····</span>       #15 agent 'Joe is 79% done, about 3s to go.'
+<span class="tok tok-wait">····</span>     #16 agent 'Let me check on Jack.' <span class="tok tok-call">tail(4)</span> 95%
+<span class="tok tok-wait">····</span>       #18 agent 'Jack is nearly done at 95%.'
+<span class="tok tok-wait">····</span>     #19 agent 'Let me check on Jane.' <span class="tok tok-call">tail(3)</span> 49%
+<span class="tok tok-wait">····</span>       #21 agent 'Jane is halfway. Let me check the others too.'
+                 <span class="tok tok-call">tail(4)</span> <span class="tok tok-result">finished</span>  <span class="tok tok-call">tail(5)</span> <span class="tok tok-result">finished</span>
+<span class="tok tok-wait">····</span>         #24 agent 'Jack and Joe are both done. Still waiting on Jane.'
+</pre>
+
+Eleven agent messages; three of them reached the screen. The eight that did not are
+every look at a task, and every word a timer prompted — including `#24`, where the agent
+worked out that Jack and Joe overlap between 11 and 2 and kept it to itself, because it
+still could not answer the question that was actually asked.
+
+The three timer nudges are worth a second look. `#13`, `#16` and `#19` are **siblings**
+hanging off `#2`, not a chain appended to the end of the conversation, so each one sits
+with the calls it is about. And the entire Austin exchange — `#7`, `#11`, `#25` — hangs
+off `#6`, which is why it could be answered and closed while the thread above it was
+still open.
+
+One leak is visible in `#11`. It is shown, because the user asked and the turn was
+starting work, and the agent chose to pack the progress percentages into the same
+message. The rule is about which turn is speaking, not about what it says, so narration
+still gets through when the user's question happens to land next to running work. The
+spinners make it redundant rather than wrong, but it is the seam where this approach
+shows.
 
 ## The same thing on Anthropic's SDK
 
