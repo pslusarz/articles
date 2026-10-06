@@ -4,19 +4,23 @@ date: 2026-10-01
 description: "Keeping an LLM agent responsive while its tools are still running: a message board instead of a transcript, progress probes, timeouts and cancellation, compared against Anthropic's Claude Agent SDK."
 ---
 
-**Summary:** A plain event loop is enough to make a conversational LLM behave like a
-ReAct agent, with no planner and no framework. Extending that loop to tools that have
-not finished yet is what turns a static transcript into an agent you can keep talking
-to. The hard part is not running the tool in the background; it is keeping the
-conversation coherent while it runs, and knowing when to give up on it. I tried this
-two ways — a message board that is rewritten every turn, and Anthropic's Claude Agent
-SDK — and this is what each gets right and wrong.
+**Summary:** How do we go from a turn-based chat to an agent that can manage multiple long-running tool calls while conversing with the user? This is the problem we are tackling here. It is accomplished via an event loop and a dynamically rewritten message board data structure, and I provide an implementation app so the reader can get a feel for what this interaction is like.
 
 > **See it first:** [async-agent-demo-production.up.railway.app](https://async-agent-demo-production.up.railway.app/)
 > — a short walkthrough of the harness in the browser. Ask about the weather in three
 > cities, then interrupt it while the lookups are still running. It takes a minute, and
 > the rest of this will make more sense once you have watched a conversation carry on
 > over the top of work that has not finished.
+
+**Motivation:** Historically, large language models were document completion machines. In order to make them usable, they were then trained on chats as the documents to complete, so they are conditioned to respond in turns. The problem is that chat recordings are not how users interact — there are tool calls and multiple things happening all at once, and chat is just a flat unrolling of a more complex interaction. Unfortunately, interaction design is not keeping up with LLM capabilities, and most agentic frameworks still work off a chat as their underlying data structure, leading to a bad user experience down the pipe. As a typical example, the current iteration of GitHub Copilot has the concept of "steering", but it will still get blocked by a long-running tool. This post, and the associated project, are an exploration of an alternate data and interaction model which allows the LLM to handle interaction with the user in a much more responsive manner.
+
+A plain event loop is enough to make a conversational LLM behave like a
+ReAct agent, with no planner and no framework. Extending that loop to tools that have
+not finished yet is what turns a static transcript into an agent you can keep talking
+to. The hard part is not running the tool in the background; it is keeping the
+conversation coherent while it runs, and knowing when to give up on it. I tried this
+two ways — a message board that is rewritten every turn, and Anthropic's Claude Agent
+SDK — and this is what each gets right and wrong.
 
 If you have ever typed a steering message to GitHub Copilot while it was waiting on a
 long tool call, and watched your message sit there until the tool finished, you already
