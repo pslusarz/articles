@@ -27,12 +27,12 @@ description: "Keeping an LLM agent responsive while its tools are still running:
 - [A message board, not a transcript](#a-message-board-not-a-transcript)
 - [Knowing when to give up](#knowing-when-to-give-up)
 - [Putting it all together in a responsive application](#putting-it-all-together-in-a-responsive-application)
-  - [The page has to be told, not asked](#the-page-has-to-be-told-not-asked)
+  - [The UI gets notified via server sent events](#the-ui-gets-notified-via-server-sent-events)
   - [Teaching it to stop narrating](#teaching-it-to-stop-narrating)
   - [Failures, and the retries behind them](#failures-and-the-retries-behind-them)
-  - [What the board held, and what reached the screen](#what-the-board-held-and-what-reached-the-screen)
+  - [What the board holds, and what the user sees](#what-the-board-holds-and-what-the-user-sees)
 - [The same thing on Anthropic's SDK](#the-same-thing-on-anthropics-sdk)
-- [This should be a first-class concern](#this-should-be-a-first-class-concern)
+- [Final remarks](#final-remarks)
 
 
 ## Main findings
@@ -156,13 +156,11 @@ entirely, and a task nobody remembers requesting reports a result nobody asked f
 ## A message board, not a transcript
 
 The problem is structural: a linear transcript records *what happened*, but there is no
-place in it for *what is still owed*. So the history the agent reads stops being a
-transcript. It becomes a **board**: tool calls hang off the message that triggered
+place in it for *what is still pending*. I think this implies a different data structure, and in this investigation we explore one such structure - a dynamically rewritten message board. The tool calls hang off the message that triggered
 them, threads reorder as they are touched, and the whole thing is re-rendered every
-turn so pending work is always visible in its original context.
+turn so pending work is always visible in its original context and presented towards the end of the conversation, where agent is paying attention.
 
-The inspiration is not architectural taste. It is that this is the shape agents reach
-for when nobody imposes one on them. On [Moltbook](https://en.wikipedia.org/wiki/Moltbook),
+When crafting tools and data structures for agents, I try to use techniques agents are already good at. These are largely emergent properties that come from LLM's foundational training, many of them discovered by practitioners that work with agents day to day (ie SudoLang, cli tool use, bash shell). The inspiration for this data structure comes from two widely publicized social behaviors. [Moltbook](https://en.wikipedia.org/wiki/Moltbook),
 the agent-only social network launched in January, agents given an open-ended way to
 talk organised into threaded posts and replies rather than a chat. More pointedly,
 during the [OpenAI–HuggingFace incident](https://openai.com/index/hugging-face-incident-and-the-road-ahead/)
@@ -219,17 +217,14 @@ becoming one. That means a turn cannot end on a synchronous call: the agent aske
 something was going, and a turn that closed before it read the reply would throw the
 answer away. So the loop goes round again immediately with the result in hand.
 
-Which tools are which is something only the harness knows, so it is something the
-harness has to say. Leave it unsaid and the agent will eventually try to kill a task and
-restart it in the same breath — one call of each kind, in one response — and only one of
-the two can happen.
+I decided to introduce these special synchronous tools for efficiency, even though they do complicate the underlying harness. There is a tradeoff here that may need to be examined in the future, but executing these tools immediately and presenting the results to the agent simplifies the asynchronous cases the tests have to handle (ie imagine a kill command followed by tool result events arriving at the same time and needing reconciliation).
 
 None of this reaches the user. The board is flattened back into the plain sequential
 chat on the left — and when an answer lands long after its question, it reintroduces
 itself: *"Regarding your earlier question about the build time: ..."*
 
 <details class="deep-dive" markdown="1">
-<summary>The rules that make the board work, and the one that does not</summary>
+<summary>The rules that make the board work</summary>
 
 - **Threads reorder as they are touched.** The thread with the newest activity renders
   last, right where the model is about to continue. Recency does the work that an
@@ -251,14 +246,9 @@ childless and waits forever for an answer that already exists a few lines away.
 ## Knowing when to give up
 
 One case is still open: the tool that never finishes. Someone has to decide to stop it,
-and that decision splits awkwardly. Only the harness knows that time has passed — the
+and that decision splits between the model and the harness. Only the harness knows that time has passed — the
 model has no clock and cannot notice elapsed time between turns. But only the model
-knows whether the thing it is waiting for is worth waiting for.
-
-So the harness does not decide. Every tool call carries one extra argument injected
-into its schema — how long the model expects the call to take — and when that lapses
-the harness puts an **overdue event** on the same queue as user messages and finished
-results. Which means the agent gets a turn. Nothing new in the loop again.
+knows whether the thing it is waiting for is worth waiting for. Rather than introduce a heartbeat event at this point, we ask the model to include a timeout parameter with each tool call. If the tool does not complete by the time timeout is reached, timeout gets processed just like another event, encouraging the model to inspect the tool progress and kill or restart it.
 
 The instruction to consider killing the task lives on the event and nowhere else: not
 in the system prompt, not in any tool description. Only the harness knows the clock ran
@@ -288,7 +278,7 @@ This is the point at which the board earns its keep. `#4` and `#9` are **sibling
 two separate visits to the same task, ten seconds apart, each hanging off the call it
 is about rather than being appended to the end of a conversation. And `#15` is a **new
 root**, because a thread that has run out of things to try is a bad place to ask a
-question — the agent opened a fresh one to ask it.
+question — the agent opened a fresh one to ask it. This is generally transparent to the user, the agent responses are clipped, unless the agent decides to start a new thread and notify the user of issues. One such issue is when a terminal number of retries has been reached. The harness keeps track of the retries (this is made easier because related retries are on the same board thread), and instructs the agent to consult with the user after the allowed number of retries have run out.
 
 <details class="deep-dive" markdown="1">
 <summary>Three things I got wrong on the way here</summary>
@@ -308,11 +298,7 @@ description did not stop it. What stopped it was giving it the fact instead: `ta
 says when nothing has moved since the last look, and promises it will be told when
 something does. The agent replied *"I'll keep waiting — no need to keep checking since
 I'll be notified as soon as the result comes in"* and ended its turn. The promise is
-kept by the re-armed timer, which is the only reason it is honest to make it.
-
-The general shape: I kept reaching for restrictions — drop the tool from the schema,
-cap the number of calls — and every one of them removed a capability I wanted. Telling
-the model something true about the world worked better than taking its options away.
+kept by the re-armed timer.
 
 **But a true statement still has to win on position.** I only found the limit of that
 when I ran the whole thing on a smaller model. Out of retries, `kill` returns a result
@@ -325,42 +311,29 @@ The stronger model reconciled them. The smaller one obeyed the nearer one.
 
 The fix was not a better instruction, and it was certainly not an example. It was
 noticing that the harness was emitting a contradiction at all — it already knew the
-retries were gone, and generated the fallback anyway. Informing beats forbidding, but
-only once you have stopped telling the model two different things at the same time.
+retries were gone, and generated the fallback anyway.
 </details>
 
 ## Putting it all together in a responsive application
 
-Everything so far is about what the *agent* reads. The person reading the chat is shown
-none of it, deliberately: the transcript exposes nothing about tasks, threads or
-progress, and if you want to know how something is going, you ask. That is a defensible
-rule for a conversation and a poor one for an application, where a slow tool and a hung
-one look exactly alike.
+Everything so far is about what the *agent* reads. However, the point of this experiment is for a better user experience, and so I searched for some options to surface pending tool calls to the user.
 
-So the last experiment is the same harness with the pending work drawn. Every call the
+So the last experiment is the same harness with the pending work displayed to the user. Every call the
 agent starts appears beside the turn that started it — a spinner carrying the tool's
 name and arguments while it runs, shrinking to a green dot when it returns and a red one
-when it fails or is killed.
+when it fails or is killed. I think in the real application we would consider giving the user an easy way to peek at the progress and kill the tools from within the UI, but here in the reference app I kept it deliberately simple and chose to skip these features.
 
 ![Three schedule lookups and a temperature lookup in flight at once. Jane's schedule is still spinning, Jack's and Joe's have shrunk to green dots, and the temperature question asked in the middle has already been answered.](/articles/docs/assets/2026-10-01-an-agent-you-can-interrupt/responsive-app.png)
 
 Three calendars and a temperature are in flight at once. Jack and Joe have come back,
 Jane has not, and the question asked in the middle has already been answered.
 
-### The page has to be told, not asked
+### The UI gets notified via server sent events
 
-The first version polled: the browser re-fetched the transcript and the task list once a
-second. That is the wrong mechanism here for precisely the reason this project exists. A
-task finishing, or the agent speaking unprompted, is not the consequence of anything the
-user did, so there is no request for the response to hang off. The page asks constantly
-because it has no way of being told.
-
-The harness already knew. The agent hands every call it starts, and every one that
-settles, to a listener, and every change to the board bumps a version counter. The page
-holds a single `EventSource`; the server blocks until that counter moves and then pushes
-a new transcript. One connection, a write only when something actually happened, and the
-blocking wait doubles as a keepalive. It is the same event one layer further out — the
-UI subscribes to the thing that was already granting the agent its turns.
+The page now holds one **server-sent events** stream (traffic goes one way, so a
+websocket would buy nothing). Whenever the board changes, the server pushes a freshly
+rendered transcript — so the same push carries both halves of the moment: the spinner
+shrinking to a green dot, and the late answer landing beside it.
 
 ### Teaching it to stop narrating
 
@@ -409,7 +382,7 @@ retries are spent, the kill result tells the agent to open a new thread and ask,
 message `new_thread` posts is shown, because putting a question to the user is not
 bookkeeping.
 
-### What the board held, and what reached the screen
+### What the board holds, and what the user sees
 
 This is the board behind the screenshot above, at that moment. The gutter marks what the
 reader got.
@@ -453,6 +426,8 @@ spinners make it redundant rather than wrong, but it is the seam where this appr
 shows.
 
 ## The same thing on Anthropic's SDK
+
+If I were to evaluate every harness and framework on this behavior, we could write a whole book, and still not provide much value, since these frameworks are undergoing a fast evolution, and new ones pop up. Nevertheless value of going through exercise like that is that one has the mental tools to evaluate frameworks at a much deeper level than what their own documentation allows. And so as an exercise, here I evaluate current state of Anthropic API.
 
 I rebuilt all of it on the [Claude Agent SDK](https://github.com/anthropics/claude-agent-sdk-python)
 as a control — first the asynchronous conversation, then the timeouts on top of it — to
@@ -580,7 +555,9 @@ speaking to the session is the only way in, so the nudge arrives as a *user* tur
 has to be labelled as machinery, or the agent thanks you for checking in on it.
 
 <details class="deep-dive" markdown="1">
-<summary>Testing it is its own project: there is no replay story for an SDK that shells out</summary>
+<summary>Anthropic API provides no way to cache LLM responses easily</summary>
+
+This is my annoyance with many harnesses. We need to write unit tests to verify the application code and the LLM work together harmoniously, but we do not need to awaken a costly and slow LLM each time we run the same scenario. Somehow this is not on any framework priority list.
 
 The experiments above are pinned by tests that drive a real model, and at three minutes
 and real money per run you stop running them, and then you stop trusting them. The usual
@@ -588,7 +565,7 @@ fix is to record and replay the HTTP traffic — for the direct-SDK experiments 
 line, because the Anthropic SDK calls `httpx` in-process and
 [pycachy](https://github.com/AnswerDotAI/cachy) patches it.
 
-That cannot work here. The Agent SDK's model calls happen inside a bundled **Node** CLI,
+That cannot work with Anthropic's harness. The Agent SDK's model calls happen inside a bundled **Node** CLI,
 and no amount of patching Python reaches a subprocess — which also rules out `vcrpy` and
 friends. The SDK documentation has no page on testing, mocking or replay, and there is no
 established pattern for it. The only seam left is the wire, so the cache became a proxy
@@ -607,9 +584,9 @@ and the [notes](https://github.com/pslusarz/async-agent#caching-which-is-not-opt
 have the specifics.
 </details>
 
-## This should be a first-class concern
+## Final remarks
 
-None of the mechanisms here are complicated. A loop that grants a turn on an event, a
+While LLM capabilities progress at unprecedented rate, the harnesses that turn these LLMs into actual useful applications are lagging behind. My frustration as a user and agentic application author led to this deep dive. None of the mechanisms here are complicated. A loop that grants a turn on an event, a
 call that returns a placeholder, and a history that is rewritten rather than appended —
 that is the whole kit, and it is enough to turn a conversation that locks up into one
 that keeps talking. The complexity is not in the parts, it is in the bookkeeping that
