@@ -12,6 +12,12 @@ conversation coherent while it runs, and knowing when to give up on it. I tried 
 two ways — a message board that is rewritten every turn, and Anthropic's Claude Agent
 SDK — and this is what each gets right and wrong.
 
+> **See it first:** [async-agent-demo-production.up.railway.app](https://async-agent-demo-production.up.railway.app/)
+> — a short walkthrough of the harness in the browser. Ask about the weather in three
+> cities, then interrupt it while the lookups are still running. It takes a minute, and
+> the rest of this will make more sense once you have watched a conversation carry on
+> over the top of work that has not finished.
+
 If you have ever typed a steering message to GitHub Copilot while it was waiting on a
 long tool call, and watched your message sit there until the tool finished, you already
 know this is not a solved problem — not even for the people building the leading agents.
@@ -212,6 +218,19 @@ thirds of an answer. The progress question at `#6` is settled even though the th
 asks about is not, because it is its own thread. And checking on a running task is not a
 special capability: `tail` at `#8` is an ordinary tool call with an ordinary result.
 
+Ordinary to the model, at least. To the harness `tail` is the other kind of tool, and
+the difference is only about *when it answers*. A **background** tool starts work that
+outlives the turn that called it and hands back a task id. A **synchronous** tool —
+`tail`, `kill` — answers in the same breath, because it acts on a task rather than
+becoming one. That means a turn cannot end on a synchronous call: the agent asked how
+something was going, and a turn that closed before it read the reply would throw the
+answer away. So the loop goes round again immediately with the result in hand.
+
+Which tools are which is something only the harness knows, so it is something the
+harness has to say. Leave it unsaid and the agent will eventually try to kill a task and
+restart it in the same breath — one call of each kind, in one response — and only one of
+the two can happen.
+
 None of this reaches the user. The board is flattened back into the plain sequential
 chat on the left — and when an answer lands long after its question, it reintroduces
 itself: *"Regarding your earlier question about the build time: ..."*
@@ -279,7 +298,7 @@ root**, because a thread that has run out of things to try is a bad place to ask
 question — the agent opened a fresh one to ask it.
 
 <details class="deep-dive" markdown="1">
-<summary>Two things I got wrong on the way here</summary>
+<summary>Three things I got wrong on the way here</summary>
 
 **Budgets for the thing, not the branch.** Killing a task spends from a retry budget,
 and my first version counted kills per conversation thread. That is wrong as soon as
@@ -301,6 +320,20 @@ kept by the re-armed timer, which is the only reason it is honest to make it.
 The general shape: I kept reaching for restrictions — drop the tool from the schema,
 cap the number of calls — and every one of them removed a capability I wanted. Telling
 the model something true about the world worked better than taking its options away.
+
+**But a true statement still has to win on position.** I only found the limit of that
+when I ran the whole thing on a smaller model. Out of retries, `kill` returns a result
+that says to open a new thread and ask the user how to proceed. Sonnet does. Haiku read
+the same sentence and answered in prose instead, in the thread it had just been told was
+dead — because the harness then appended its own fallback line, `Respond to [#12].`, and
+that was the last thing in the prompt. The instruction I meant sat seven levels deep
+inside a bracketed tool result; the one that contradicted it was flush left at the end.
+The stronger model reconciled them. The smaller one obeyed the nearer one.
+
+The fix was not a better instruction, and it was certainly not an example. It was
+noticing that the harness was emitting a contradiction at all — it already knew the
+retries were gone, and generated the fallback anyway. Informing beats forbidding, but
+only once you have stopped telling the model two different things at the same time.
 </details>
 
 ## Putting it all together in a responsive application
