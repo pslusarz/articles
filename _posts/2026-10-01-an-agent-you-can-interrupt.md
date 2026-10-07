@@ -1,7 +1,7 @@
 ---
 title: "Towards a responsive agentic behavior"
 date: 2026-10-01
-description: "Keeping an LLM agent responsive while its tools are still running: a message board instead of a transcript, progress probes, timeouts and cancellation, compared against Anthropic's Claude Agent SDK."
+description: "Keeping an LLM agent responsive while its tools are still running: a message board instead of a transcript, progress probes, timeouts and cancellation, compared against Anthropic's Claude Agent SDK and LangChain's async subagents."
 ---
 
 **Summary:** How do we go from a turn-based chat to an agent that can manage multiple long-running tool calls while conversing with the user? This is the problem we are tackling here. It is accomplished via an event loop and a dynamically rewritten message board data structure, and I provide an implementation app so the reader can get a feel for what this interaction is like.
@@ -23,7 +23,7 @@ description: "Keeping an LLM agent responsive while its tools are still running:
 
 **Motivation:** Historically, large language models were document completion machines. In order to make them usable, they were then trained on chats as the documents to complete, so they are conditioned to respond in turns. The problem is that chat recordings are not how users interact — there are tool calls and multiple things happening all at once, and chat is just a flat unrolling of a more complex interaction. Unfortunately, interaction design is not keeping up with LLM capabilities, and most agentic frameworks still work off a chat as their underlying data structure, leading to a bad user experience down the pipe. As a typical example, the current iteration of GitHub Copilot has the concept of "steering", but it will still get blocked by a long-running tool. This post, and the associated project, are an exploration of an alternate data and interaction model which allows the LLM to handle interaction with the user in a much more responsive manner.
 
-**Audience:** If you are writing an agentic app, you should probably get familiar with the issues described here. I initially ran into this when writing an agentic app which did the work in the background, but with user occasionally connecting to it, asking for progress update and helping it get unstuck. This is probably too long for any human to read to the end in this day and age, so I suggest you point your agent at this article and ask it questions you want answered. While I don't necessarily recommend using this code as-is, current harnesses do not provide satisfying structures either (comparison with ClaudeAgentSDK is included).
+**Audience:** If you are writing an agentic app, you should probably get familiar with the issues described here. I initially ran into this when writing an agentic app which did the work in the background, but with user occasionally connecting to it, asking for progress update and helping it get unstuck. This is probably too long for any human to read to the end in this day and age, so I suggest you point your agent at this article and ask it questions you want answered. While I don't necessarily recommend using this code as-is, current harnesses do not provide satisfying structures either (comparisons with ClaudeAgentSDK and LangChain's async subagents are included).
 
 **Contents**
 
@@ -39,6 +39,7 @@ description: "Keeping an LLM agent responsive while its tools are still running:
   - [Failures, and the retries behind them](#failures-and-the-retries-behind-them)
   - [What the board holds, and what the user sees](#what-the-board-holds-and-what-the-user-sees)
 - [The same thing on Anthropic's SDK](#the-same-thing-on-anthropics-sdk)
+- [The same thing on LangChain's async subagents](#the-same-thing-on-langchains-async-subagents)
 - [Final remarks](#final-remarks)
 
 
@@ -52,6 +53,7 @@ description: "Keeping an LLM agent responsive while its tools are still running:
   This is the sensible default, and it does not complicate the underlying harness, rather it simplifies things.
 - **All tools provide interface for progress update and kill** The progress update is modeled on the tail(num_lines) command. These are the only two tools that need to return immediately, and they get handled in a special way by the harness, allowing the agent to respond on the same turn. 
 - **Anthropic's SDK gets the mechanics and misses the bookkeeping.** First thing to recognize with Anthropic SDK is that tool calls need to be wrapped as (sub-)agents, because all regular tool calls are synchronous. The framework explicitly prevents agent from polling for progress from these subagents.
+- **LangChain's async subagents can be made to behave, but only by adding the missing parts.** Out of the box the supervisor is never told that a task has finished. Two small tools give it progress and a wake-up timer, and then it answers unprompted. That is the same idea as here, built from more parts and paid for in model calls and latency.
 - **Reference app included** - a fully responsive app is implemented, surfacing pending tool calls to both the user and agent. There is an interactive demo deployed.
 
 The code is in [pslusarz/async-agent](https://github.com/pslusarz/async-agent).
@@ -590,6 +592,63 @@ The [implementation](https://github.com/pslusarz/async-agent/blob/main/src/main/
 and the [notes](https://github.com/pslusarz/async-agent#caching-which-is-not-optional)
 have the specifics.
 </details>
+
+## The same thing on LangChain's async subagents
+
+LangChain recently shipped [async subagents](https://docs.langchain.com/oss/python/deepagents/async-subagents)
+for its deep agents. Of the mainstream frameworks, it comes closest to the behavior described here.
+A supervisor launches a subagent, gets a task id back immediately, and is able to continue chatting with the user.
+Five tools come with it: start, check, update, cancel and list. The task
+bookkeeping lives in a dedicated `async_tasks` state channel, kept out of the message
+history so that summarisation cannot drop it. That is the same problem the board solves
+by re-ordering threads. Seeing it addressed head-on in a framework is encouraging.
+
+The calendar scenario was implemented with LangChain native constructs. There are
+two deep agents, a supervisor and a researcher, registered with a local `langgraph dev`
+server. A subagent here is a thread and a run on an
+[Agent Protocol](https://github.com/langchain-ai/agent-protocol) server, so it lives
+in a different process from the agent that started it. The chat app is a plain SDK
+client that posts each user message as another run on the supervisor's thread.
+
+**As shipped, it is pull-only.** The UI, which
+reads the subagent's thread directly, showed the researcher finished, but the supervisor was never notified and never said anything to the user. The supervisor
+still held the task as `running`. It found out only when I typed "any
+update?" and it called `check_async_task`. That tool returns a status, plus the final
+message once the run is over, so there is nothing to look at while the work is going.
+The documentation's troubleshooting section even names the failure you get when the
+model compensates: *the supervisor calls check in a loop right after launching*. The
+recommended fix is a sentence in the system prompt.
+
+**It can be taught.** Two tools, about sixty lines, built from nothing but LangGraph SDK
+calls ([`watch.py`](https://github.com/pslusarz/async-agent/blob/main/src/main/exp9/watch.py)):
+
+```python
+@tool
+async def check_back_in(seconds: int, note: str, runtime: ToolRuntime) -> str:
+    """Arrange to be woken after `seconds` to look at a running task again."""
+    thread = runtime.config["configurable"]["thread_id"]
+    await disarm(cli, thread)  # one wake-up armed at a time
+    await cli.runs.create(
+        thread,
+        "supervisor",
+        input={"messages": [{"role": "user", "content": f"[automatic] {note}"}]},
+        multitask_strategy="enqueue",
+        after_seconds=seconds,
+    )
+```
+
+`peek_async_task` is the `tail` equivalent. It reads the subagent's own thread state: its
+latest words, and which tools it has started and finished. The data was always there;
+the supervisor just had no tool for asking. `check_back_in` is the timer. It schedules
+a run on the supervisor's *own* thread for later, so the server wakes it up with a note
+it wrote to itself. With both in place, the supervisor starts the research, says so,
+and about thirty seconds later comes back with the meeting time, without another word
+from the user.
+
+So it can be done, but it is the equivalent of a sleeping, polling thread - structurally not the right mechanism. It spends tokens on every wake-up, and the answer waits for the next one. Also, note how much extra code had to be written just to surface the fundamentals of user experience.
+
+The code for
+this experiment is in [`exp9`](https://github.com/pslusarz/async-agent/tree/main/src/main/exp9).
 
 ## Final remarks
 
