@@ -6,7 +6,14 @@ description: "Keeping an LLM agent responsive while its tools are still running:
 
 **Summary:** How do we go from a turn-based chat to an agent that can manage multiple long-running tool calls while conversing with the user? This is the problem we are tackling here. It is accomplished via an event loop and a dynamically rewritten message board data structure, and I provide an implementation app so the reader can get a feel for what this interaction is like.
 
-![The demo mid-conversation. On the left the chat shows a finished build lookup as a green dot, a test lookup that was killed as a red one, and a fresh test_time call still spinning. On the right, the board the model reads: the kill, the retry, and a placeholder saying the new call is running as task #13.](/articles/docs/assets/2026-10-01-an-agent-you-can-interrupt/demo-kill-and-retry.png)
+<video controls autoplay loop muted playsinline
+       poster="/articles/docs/assets/2026-10-01-an-agent-you-can-interrupt/demo-kill-and-retry.png"
+       style="max-width:100%;height:auto;display:block;margin:1.5rem 0;border:1px solid #d0d7de;border-radius:.5rem"
+       aria-label="The demo playing. A build lookup finishes as a green dot. A second tool reports progress and then stops dead; the harness notices it is overdue, and the agent tails it, kills it — the dot turns red — and starts a fresh call that completes. The panel on the right shows the board the model reads.">
+  <source src="/articles/docs/assets/2026-10-01-an-agent-you-can-interrupt/demo-kill-and-retry.mp4" type="video/mp4">
+  <img src="/articles/docs/assets/2026-10-01-an-agent-you-can-interrupt/demo-kill-and-retry.png"
+       alt="The demo mid-conversation: a finished build lookup as a green dot, a killed test lookup as a red one, and a fresh call still spinning.">
+</video>
 
 > **See it first:** [async-agent-demo-production.up.railway.app](https://async-agent-demo-production.up.railway.app/)
 > — a short walkthrough of the harness in the browser. Ask about the weather in three
