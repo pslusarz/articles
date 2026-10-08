@@ -324,4 +324,6 @@ I see these capabilities as a bit of a pyramid, with dynamic UI at the bottom, a
 
 Lastly, at the top of the pyramid is the capability to save an application for the future. A useful app that the user and the agent chiseled together should not have to be recreated each time. The next logical step after that may be to deploy an app off of the local machine. This is how [Caribbean Fish Recall](https://caribbean-fish-recall-production.up.railway.app) originated. I did not provide for automation of this, although the agent was able to peel the code away ([pslusarz/caribbean-fish-recall](https://github.com/pslusarz/caribbean-fish-recall)) and deploy it to Railway with a few instructions.
 
+If you would like to try it for yourself, it is verified to work in GitHub Copilot in VS Code, and in Claude Cowork (not Claude Code!) in the Claude desktop app on a Mac. Point your agent to the repo, [pslusarz/lustereczko-mcp](https://github.com/pslusarz/lustereczko-mcp), and tell it to install it as a local MCP server.
+
 Thank you for reading this far, and let me know your thoughts.
