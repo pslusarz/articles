@@ -2,6 +2,7 @@
 title: "Towards a responsive agentic behavior"
 date: 2026-10-01
 description: "Keeping an LLM agent responsive while its tools are still running: a message board instead of a transcript, progress probes, timeouts and cancellation, compared against Anthropic's Claude Agent SDK and LangChain's async subagents."
+image: /docs/assets/2026-10-01-an-agent-you-can-interrupt/demo-kill-and-retry.png
 ---
 
 **Summary:** How do we go from a turn-based chat to an agent that can manage multiple long-running tool calls while conversing with the user? This is the problem we are tackling here. It is accomplished via an event loop and a dynamically rewritten message board data structure, and I provide an implementation app so the reader can get a feel for what this interaction is like.
