@@ -4,6 +4,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   {%- seo -%}
   <link rel="stylesheet" href="{{ "/assets/main.css" | relative_url }}">
+  <link rel="icon" href="{{ "/favicon.ico" | relative_url }}" sizes="48x48">
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ "/assets/icons/icon-32.png" | relative_url }}">
+  <link rel="icon" type="image/png" sizes="192x192" href="{{ "/assets/icons/icon-192.png" | relative_url }}">
+  <link rel="apple-touch-icon" href="{{ "/assets/icons/apple-touch-icon.png" | relative_url }}">
   {%- feed_meta -%}
   {%- if jekyll.environment == 'production' and site.google_analytics -%}
     {%- include google-analytics.html -%}
