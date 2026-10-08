@@ -37,17 +37,26 @@ From the one `.webm`, using the settings that have worked:
 |---|---|---|
 | MP4 | blog `<video>`, Reddit upload | `setpts=PTS/1.5`, `libx264 -preset slow -crf 24 -pix_fmt yuv420p -movflags +faststart`, `-an` |
 | GIF | GitHub README (it won't play MP4 from markdown) | `setpts=PTS/2,fps=12,scale=900:-1:flags=lanczos`, two passes: `palettegen=stats_mode=diff`, then `paletteuse=dither=bayer:bayer_scale=3` |
-| PNG | `poster` for the video, and the post's social card image | one representative frame: `-ss <t> -frames:v 1` |
+| PNG | `poster` for the video | one representative frame: `-ss <t> -frames:v 1` |
 
 Targets: MP4 under 1 MB, GIF under about 3 MB. If the GIF is too large, trim length
 before lowering quality.
+
+## Social card
+
+A separate 1200×630 PNG (1.9:1) for the post's `image:`. Don't reuse the poster: link
+previews crop anything wider than 1.9:1 and show the card at about 550 px, which turns
+full-page UI text into blur. Instead screenshot the end state directly with Playwright at
+`device_scale_factor=3`, hide everything but the part that tells the story (inject CSS),
+narrow it so it fills a 1.9:1 clip, then scale to exactly 1200×630. Check it with
+LinkedIn's Post Inspector after publishing.
 
 **Check before integrating.** Build a contact sheet (`fps=1/3,scale=440:-1,tile=4x2`,
 `-frames:v 1`) and look at it. It shows in one image whether the arc is readable.
 
 ## Where the files go
 
-- MP4 and PNG: `docs/assets/<post-slug>/` in this repo.
+- MP4, poster PNG and social card: `docs/assets/<post-slug>/` in this repo.
 - GIF: the project's own repo (e.g. its `docs/`), referenced from its README.
 
 Blog embed, with paths including the `/articles` baseurl:

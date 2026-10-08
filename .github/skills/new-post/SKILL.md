@@ -17,15 +17,15 @@ and the local preview setup are in `README.md`. Read it first.
   - `date`
   - `description`: one sentence of about 150-160 characters. It is the search snippet
     and the social preview text.
-  - `image`: path to a PNG under `docs/assets/<slug>/`. `jekyll-seo-tag` turns it into
+  - `image`: a 1200×630 PNG under `docs/assets/<slug>/`. `jekyll-seo-tag` turns it into
     the `og:image` card shown when the link is shared.
 - Supporting files go in `docs/assets/<slug>/`.
 - The house shape so far: a **Summary**, **Motivation** and **Audience** paragraph at the
   top, then a linked **Contents** list, then **Main findings** as bullets, then the
   sections. When an existing tool solves part of the problem, include a section that
   rebuilds the idea on that tool, as a control.
-- If the project has a working app, record a clip (`recording-demo-clips`). The poster
-  frame can double as the `image`.
+- If the project has a working app, record a clip (`recording-demo-clips`), and make a
+  1200×630 social card for `image` as described there.
 
 ## Preview
 
