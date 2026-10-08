@@ -43,6 +43,15 @@ pre.wire {
   overflow-x: auto;
 }
 
+// A numbered key under a diagram, numbers styled with the .tok palette.
+ol.flow-key {
+  list-style: none;
+  margin-left: 0;
+  font-size: 0.92rem;
+
+  > li { margin: 0.2rem 0; }
+}
+
 figure.panel { margin: 0 0 1rem 0; }
 figure.panel > figcaption {
   font-size: 0.78rem;
