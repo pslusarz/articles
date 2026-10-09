@@ -6,6 +6,17 @@ description: "Lustereczko lets your agent generate interactive UIs and small app
 
 OpenAI announced [Intelligent UI](https://openai.com/index/gpt-6-for-everyone/) on October 7, 151 days after the [debut of lustereczko-mcp](https://www.reddit.com/r/mcp/comments/1t8xgq9/llm_generated_uis_in_mcp_apps_actual_working/). This may be cause for celebration, in that a single developer is often able to innovate at a much higher rate than even the frontier labs. It is also an opportunity to reflect on over 4 months of use and progress that still leaves Intelligent UI in the dust as far as capabilities. Where is lustereczko now and what innovative ways of interacting with an agent does it offer?
 
+<video controls autoplay loop muted playsinline
+       poster="/articles/docs/assets/2026-10-08-lustereczko-five-months-on/declaration-reader.png"
+       style="max-width:100%;height:auto;display:block;margin:1.5rem 0;border:1px solid #d0d7de;border-radius:.5rem"
+       aria-label="Reading the Declaration of Independence inside GitHub Copilot chat in VS Code. The user highlights a passage, asks why it is capitalized so strangely, and the agent's answer appears in a comment card next to the passage. The user then highlights unalienable Rights, asks whether it is a misspelling, and that answer appears in its own card.">
+  <source src="/articles/docs/assets/2026-10-08-lustereczko-five-months-on/declaration-reader.mp4" type="video/mp4">
+  <img src="/articles/docs/assets/2026-10-08-lustereczko-five-months-on/declaration-reader.png"
+       alt="Two highlighted passages of the Declaration of Independence, each with a comment card in the margin holding the user's question and the agent's answer.">
+</video>
+
+*Questions about a passage, answered next to it. The agent is GitHub Copilot in VS Code; the video is real time, not sped up. [How it was wired](#how-the-declaration-demo-was-wired).*
+
 Lustereczko-mcp is rooted in a belief that LLMs can interact with the user in a much richer way than through chat. We use LLMs to generate copious amounts of code every day, why not use the same capability to generate on-the-fly custom interfaces to communicate with the user? We can start with a simple example: let's visualize something. OpenAI gives us a [bicycle](https://help.openai.com/en/articles/20001598-intelligent-ui-in-chatgpt), but I think our readers could use something better - let's see if we can give you a good intuition why a positive result from a test that correctly identifies 99% of the positive cases can still mean you have less than a 10% chance of actually being sick. Here is what my agent built for that:
 
 <video controls autoplay loop muted playsinline
@@ -110,6 +121,16 @@ The agent picks the channel id before it renders, and bakes it into the HTML as 
 </pre>
 
 The last line is the weak spot from the paragraph above: nothing wakes the agent up to make that call.
+</details>
+
+<details class="deep-dive" markdown="1" id="how-the-declaration-demo-was-wired">
+<summary>How the Declaration demo was wired</summary>
+
+The reader is one `display_ui_to_user` fragment: the text, a margin for comments, and a channel id. Asking about a highlighted passage sends `notify_agent("ask", {thread_id, quote, paragraph, question, history})`, and the card polls `poll_ui_messages` until an `answer` with its thread id arrives.
+
+On the other side is the agent in GitHub Copilot chat in VS Code. To get it to respond without anyone typing in the chat, it starts a tiny watcher script as a background terminal command. The script blocks until the channel's queue file has something in it, then exits. Copilot tells the agent when a background command finishes, which gives it a new turn: it drains the queue with `poll_agent_messages`, writes the answer with `notify_ui`, and starts the watcher again. Waiting costs no tokens, and the chat stays free.
+
+That wake-up could take half a minute, too slow for a video. For the recording, the agent stayed in its turn and ran the watcher in the foreground instead, answering each question as soon as it came in.
 </details>
 
 Finally, we would like to equip our app with the capability to perform some actions on the user's system. This is done through custom MCP tool deployment, available via `add_custom_tool` and `run_custom_tool`. These tools can be run by both the agent and the UI, although they are mostly intended for the UI. The code backing them gets executed on the host machine.
