@@ -19,6 +19,24 @@ layout: default
     {{ content }}
   </div>
 
+  {%- if site.posts.size > 1 -%}
+    <nav class="more-articles" aria-label="More articles">
+      <h2>More articles</h2>
+      <ul>
+        {%- assign date_format = site.minima.date_format | default: "%b %-d, %Y" -%}
+        {%- for post in site.posts limit: 6 -%}
+          {%- if post.url != page.url -%}
+            <li>
+              <a href="{{ post.url | relative_url }}">{{ post.title | escape }}</a>
+              <span class="post-meta">{{ post.date | date: date_format }}</span>
+            </li>
+          {%- endif -%}
+        {%- endfor -%}
+      </ul>
+      <p><a href="{{ "/" | relative_url }}">All articles</a></p>
+    </nav>
+  {%- endif -%}
+
   {%- if site.giscus.repo -%}
     <section class="post-comments">
       <h2>Comments and reactions</h2>
