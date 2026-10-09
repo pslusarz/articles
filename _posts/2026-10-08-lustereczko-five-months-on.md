@@ -6,7 +6,7 @@ description: "Lustereczko lets your agent generate interactive UIs and small app
 
 OpenAI announced [Intelligent UI](https://openai.com/index/gpt-6-for-everyone/) on October 7, 151 days after the [debut of lustereczko-mcp](https://www.reddit.com/r/mcp/comments/1t8xgq9/llm_generated_uis_in_mcp_apps_actual_working/). This may be cause for celebration, in that a single developer is often able to innovate at a much higher rate than even the frontier labs. It is also an opportunity to reflect on over 4 months of use and progress that still leaves Intelligent UI in the dust as far as capabilities. Where is lustereczko now and what innovative ways of interacting with an agent does it offer?
 
-<video controls autoplay loop muted playsinline
+<video controls muted playsinline preload="metadata"
        poster="/articles/docs/assets/2026-10-08-lustereczko-five-months-on/declaration-reader.png"
        style="max-width:100%;height:auto;display:block;margin:1.5rem 0;border:1px solid #d0d7de;border-radius:.5rem"
        aria-label="Reading the Declaration of Independence inside GitHub Copilot chat in VS Code. The user highlights a passage, asks why it is capitalized so strangely, and the agent's answer appears in a comment card next to the passage. The user then highlights unalienable Rights, asks whether it is a misspelling, and that answer appears in its own card.">
@@ -19,7 +19,7 @@ OpenAI announced [Intelligent UI](https://openai.com/index/gpt-6-for-everyone/) 
 
 Lustereczko-mcp is rooted in a belief that LLMs can interact with the user in a much richer way than through chat. We use LLMs to generate copious amounts of code every day, why not use the same capability to generate on-the-fly custom interfaces to communicate with the user? We can start with a simple example: let's visualize something. OpenAI gives us a [bicycle](https://help.openai.com/en/articles/20001598-intelligent-ui-in-chatgpt), but I think our readers could use something better - let's see if we can give you a good intuition why a positive result from a test that correctly identifies 99% of the positive cases can still mean you have less than a 10% chance of actually being sick. Here is what my agent built for that:
 
-<video controls autoplay loop muted playsinline
+<video controls muted playsinline preload="metadata"
        poster="/articles/docs/assets/2026-10-08-lustereczko-five-months-on/bayes-tree.png"
        style="max-width:100%;height:auto;display:block;margin:1.5rem 0;border:1px solid #d0d7de;border-radius:.5rem"
        aria-label="A decision tree of 1,000 people. They split into 1 sick and 999 healthy, then each group splits by the test result. The two positive groups are tallied: 1 sick to 10 healthy, a 9.1% chance of being sick. Moving the sliders to 50 sick people changes the tally to 50 to 10, and a test that clears 99.9% of healthy people gives 1 to 1.">
@@ -41,7 +41,7 @@ However, that is just a beginning, and our biggest bottleneck right now is our o
 </figure>
 <figure class="panel" style="flex:2 1 22rem">
 <figcaption>The same 500 in the sorter my agent built</figcaption>
-<video controls autoplay loop muted playsinline
+<video controls muted playsinline preload="metadata"
        poster="/articles/docs/assets/2026-10-08-lustereczko-five-months-on/photo-sorter.png"
        style="max-width:100%;height:auto;display:block;border:1px solid #d0d7de;border-radius:.5rem"
        aria-label="The photo sorter. Photos are filed into People, Landscapes, Animals, Food and Delete with number keys, one after another. Seven landscapes are picked with command-click and filed at once. Pressing Move 28 files moves them into folders and tells the agent what was sorted.">
